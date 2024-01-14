@@ -1,938 +1,161 @@
-# Flasgger
-## Easy Swagger UI for your Flask API
+# AirBnB Clone - The Console
+The console is the first segment of the AirBnB project at Holberton School that will collectively cover fundamental concepts of higher level programming. The goal of AirBnB project is to eventually deploy our server a simple copy of the AirBnB Website(HBnB). A command interpreter is created in this segment to manage objects for the AirBnB(HBnB) website.
 
-[![Build Status](https://travis-ci.com/flasgger/flasgger.svg?branch=master)](https://travis-ci.com/flasgger/flasgger)
-[![Code Health](https://landscape.io/github/rochacbruno/flasgger/master/landscape.svg?style=flat)](https://landscape.io/github/rochacbruno/flasgger/master)
-[![Coverage Status](https://coveralls.io/repos/github/rochacbruno/flasgger/badge.svg?branch=master)](https://coveralls.io/github/rochacbruno/flasgger?branch=master)
-[![PyPI](https://img.shields.io/pypi/v/flasgger.svg)](https://pypi.python.org/pypi/flasgger)
- <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=rochacbruno%40gmail%2ecom&amp;lc=BR&amp;item_name=Flasgger&amp;no_note=0&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHostedGuest"><img alt='Donate with Paypal' src='http://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif' /></a>
+#### Functionalities of this command interpreter:
+* Create a new object (ex: a new User or a new Place)
+* Retrieve an object from a file, a database etc...
+* Do operations on objects (count, compute stats, etc...)
+* Update attributes of an object
+* Destroy an object
 
-
-![flasgger](docs/flasgger.png)
-
-Flasgger is a Flask extension to **extract [OpenAPI-Specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#operation-object)** from all Flask views registered in your API.
-
-Flasgger also comes with **[SwaggerUI](http://swagger.io/swagger-ui/) embedded** so you can access [http://localhost:5000/apidocs](localhost:5000/apidocs) and visualize and interact with your API resources.
-
-Flasgger also **provides validation** of the incoming data, using the same specification it can validates if the data received as as a POST, PUT, PATCH is valid against the schema defined using **YAML**, **Python dictionaries** or **Marshmallow Schemas**.
-
-Flasgger can work with simple function views or MethodViews using docstring as specification, or using `@swag_from` decorator to get specification from **YAML** or **dict** and also provides **SwaggerView** which can use **Marshmallow Schemas**  as specification.
-
-Flasgger is compatible with `Flask-RESTful` so you can use `Resources` and `swag` specifications together, take a look at [restful example.](examples/restful.py)
-
-Flasgger also supports `Marshmallow APISpec` as base template for specification, if you are using APISPec from Marshmallow take a look at [apispec example.](examples/apispec_example.py)
-
-Table of Contents
-=================
-
-* [Top Contributors](#top-contributors)
-* [Examples and demo app](#examples-and-demo-app)
-  * [Docker](#docker)
+## Table of Content
+* [Environment](#environment)
 * [Installation](#installation)
-* [Getting started](#getting-started)
-  * [Using docstrings as specification](#using-docstrings-as-specification)
-  * [Using external YAML files](#using-external-yaml-files)
-  * [Using dictionaries as raw specs](#using-dictionaries-as-raw-specs)
-  * [Using Marshmallow Schemas](#using-marshmallow-schemas)
-  * [Using <strong>Flask RESTful</strong> Resources](#using-flask-restful-resources)
-  * [Auto-parsing external YAML docs and MethodViews](#auto-parsing-external-yaml-docs-and-methodviews)
-  * [Handling multiple http methods and routes for a single function](#handling-multiple-http-methods-and-routes-for-a-single-function)
-* [Use the same data to validate your API POST body.](#use-the-same-data-to-validate-your-api-post-body)
-     * [Custom validation](#custom-validation)
-     * [Validation Error handling](#validation-error-handling)
-* [Get defined schemas as python dictionaries](#get-defined-schemas-as-python-dictionaries)
-* [HTML sanitizer](#html-sanitizer)
-* [Swagger UI and templates](#swagger-ui-and-templates)
-* [OpenAPI 3.0 Support](#openapi-30-support)
-  * [Externally loading Swagger UI and jQuery JS/CSS](#externally-loading-swagger-ui-and-jquery-jscss)
-* [Initializing Flasgger with default data.](#initializing-flasgger-with-default-data)
-  * [Getting default data at runtime](#getting-default-data-at-runtime)
-  * [Behind a reverse proxy](#behind-a-reverse-proxy)
-* [Customize default configurations](#customize-default-configurations)
-  * [Extracting Definitions](#extracting-definitions)
-  * [Python2 Compatibility](#python2-compatibility)
+* [File Descriptions](#file-descriptions)
+* [Usage](#usage)
+* [Examples of use](#examples-of-use)
+* [Bugs](#bugs)
+* [Authors](#authors)
+* [License](#license)
 
-Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+## Environment
+This project is interpreted/tested on Ubuntu 14.04 LTS using python3 (version 3.4.3)
 
-# Top Contributors
+## Installation
+* Clone this repository: `git clone "https://github.com/alexaorrico/AirBnB_clone.git"`
+* Access AirBnb directory: `cd AirBnB_clone`
+* Run hbnb(interactively): `./console` and enter command
+* Run hbnb(non-interactively): `echo "<command>" | ./console.py`
 
-[![](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/images/0)](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/links/0)[![](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/images/1)](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/links/1)[![](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/images/2)](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/links/2)[![](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/images/3)](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/links/3)[![](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/images/4)](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/links/4)[![](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/images/5)](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/links/5)[![](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/images/6)](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/links/6)[![](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/images/7)](https://sourcerer.io/fame/rochacbruno/rochacbruno/flasgger/links/7)
+## File Descriptions
+[console.py](console.py) - the console contains the entry point of the command interpreter. 
+List of commands this console current supports:
+* `EOF` - exits console 
+* `quit` - exits console
+* `<emptyline>` - overwrites default emptyline method and does nothing
+* `create` - Creates a new instance of`BaseModel`, saves it (to the JSON file) and prints the id
+* `destroy` - Deletes an instance based on the class name and id (save the change into the JSON file). 
+* `show` - Prints the string representation of an instance based on the class name and id.
+* `all` - Prints all string representation of all instances based or not on the class name. 
+* `update` - Updates an instance based on the class name and id by adding or updating attribute (save the change into the JSON file). 
 
-# Examples and demo app
+#### `models/` directory contains classes used for this project:
+[base_model.py](/models/base_model.py) - The BaseModel class from which future classes will be derived
+* `def __init__(self, *args, **kwargs)` - Initialization of the base model
+* `def __str__(self)` - String representation of the BaseModel class
+* `def save(self)` - Updates the attribute `updated_at` with the current datetime
+* `def to_dict(self)` - returns a dictionary containing all keys/values of the instance
 
-There are some [example applications](examples/) and you can also play with examples in [Flasgger demo app](http://flasgger.pythonanywhere.com/)
+Classes inherited from Base Model:
+* [amenity.py](/models/amenity.py)
+* [city.py](/models/city.py)
+* [place.py](/models/place.py)
+* [review.py](/models/review.py)
+* [state.py](/models/state.py)
+* [user.py](/models/user.py)
 
-> NOTE: all the examples apps are also test cases and run automatically in Travis CI to ensure quality and coverage.
+#### `/models/engine` directory contains File Storage class that handles JASON serialization and deserialization :
+[file_storage.py](/models/engine/file_storage.py) - serializes instances to a JSON file & deserializes back to instances
+* `def all(self)` - returns the dictionary __objects
+* `def new(self, obj)` - sets in __objects the obj with key <obj class name>.id
+* `def save(self)` - serializes __objects to the JSON file (path: __file_path)
+* ` def reload(self)` -  deserializes the JSON file to __objects
 
-## Docker
+#### `/tests` directory contains all unit test cases for this project:
+[/test_models/test_base_model.py](/tests/test_models/test_base_model.py) - Contains the TestBaseModel and TestBaseModelDocs classes
+TestBaseModelDocs class:
+* `def setUpClass(cls)`- Set up for the doc tests
+* `def test_pep8_conformance_base_model(self)` - Test that models/base_model.py conforms to PEP8
+* `def test_pep8_conformance_test_base_model(self)` - Test that tests/test_models/test_base_model.py conforms to PEP8
+* `def test_bm_module_docstring(self)` - Test for the base_model.py module docstring
+* `def test_bm_class_docstring(self)` - Test for the BaseModel class docstring
+* `def test_bm_func_docstrings(self)` - Test for the presence of docstrings in BaseModel methods
 
-The examples and demo app can also be built and run as a Docker image/container:
+TestBaseModel class:
+* `def test_is_base_model(self)` - Test that the instatiation of a BaseModel works
+* `def test_created_at_instantiation(self)` - Test created_at is a pub. instance attribute of type datetime
+* `def test_updated_at_instantiation(self)` - Test updated_at is a pub. instance attribute of type datetime
+* `def test_diff_datetime_objs(self)` - Test that two BaseModel instances have different datetime objects
 
+[/test_models/test_amenity.py](/tests/test_models/test_amenity.py) - Contains the TestAmenityDocs class:
+* `def setUpClass(cls)` - Set up for the doc tests
+* `def test_pep8_conformance_amenity(self)` - Test that models/amenity.py conforms to PEP8
+* `def test_pep8_conformance_test_amenity(self)` - Test that tests/test_models/test_amenity.py conforms to PEP8
+* `def test_amenity_module_docstring(self)` - Test for the amenity.py module docstring
+* `def test_amenity_class_docstring(self)` - Test for the Amenity class docstring
+
+[/test_models/test_city.py](/tests/test_models/test_city.py) - Contains the TestCityDocs class:
+* `def setUpClass(cls)` - Set up for the doc tests
+* `def test_pep8_conformance_city(self)` - Test that models/city.py conforms to PEP8
+* `def test_pep8_conformance_test_city(self)` - Test that tests/test_models/test_city.py conforms to PEP8
+* `def test_city_module_docstring(self)` - Test for the city.py module docstring
+* `def test_city_class_docstring(self)` - Test for the City class docstring
+
+[/test_models/test_file_storage.py](/tests/test_models/test_file_storage.py) - Contains the TestFileStorageDocs class:
+* `def setUpClass(cls)` - Set up for the doc tests
+* `def test_pep8_conformance_file_storage(self)` - Test that models/file_storage.py conforms to PEP8
+* `def test_pep8_conformance_test_file_storage(self)` - Test that tests/test_models/test_file_storage.py conforms to PEP8
+* `def test_file_storage_module_docstring(self)` - Test for the file_storage.py module docstring
+* `def test_file_storage_class_docstring(self)` - Test for the FileStorage class docstring
+
+[/test_models/test_place.py](/tests/test_models/test_place.py) - Contains the TestPlaceDoc class:
+* `def setUpClass(cls)` - Set up for the doc tests
+* `def test_pep8_conformance_place(self)` - Test that models/place.py conforms to PEP8.
+* `def test_pep8_conformance_test_place(self)` - Test that tests/test_models/test_place.py conforms to PEP8.
+* `def test_place_module_docstring(self)` - Test for the place.py module docstring
+* `def test_place_class_docstring(self)` - Test for the Place class docstring
+
+[/test_models/test_review.py](/tests/test_models/test_review.py) - Contains the TestReviewDocs class:
+* `def setUpClass(cls)` - Set up for the doc tests
+* `def test_pep8_conformance_review(self)` - Test that models/review.py conforms to PEP8
+* `def test_pep8_conformance_test_review(self)` - Test that tests/test_models/test_review.py conforms to PEP8
+* `def test_review_module_docstring(self)` - Test for the review.py module docstring
+* `def test_review_class_docstring(self)` - Test for the Review class docstring
+
+[/test_models/state.py](/tests/test_models/test_state.py) - Contains the TestStateDocs class:
+* `def setUpClass(cls)` - Set up for the doc tests
+* `def test_pep8_conformance_state(self)` - Test that models/state.py conforms to PEP8
+* `def test_pep8_conformance_test_state(self)` - Test that tests/test_models/test_state.py conforms to PEP8
+* `def test_state_module_docstring(self)` - Test for the state.py module docstring
+* `def test_state_class_docstring(self)` - Test for the State class docstring
+
+[/test_models/user.py](/tests/test_models/test_user.py) - Contains the TestUserDocs class:
+* `def setUpClass(cls)` - Set up for the doc tests
+* `def test_pep8_conformance_user(self)` - Test that models/user.py conforms to PEP8
+* `def test_pep8_conformance_test_user(self)` - Test that tests/test_models/test_user.py conforms to PEP8
+* `def test_user_module_docstring(self)` - Test for the user.py module docstring
+* `def test_user_class_docstring(self)` - Test for the User class docstring
+
+
+## Examples of use
 ```
-docker build -t flasgger .
-docker run -it --rm -p 5000:5000 --name flasgger flasgger
-```
-Then access the Flasgger demo app at http://localhost:5000 .
+vagrantAirBnB_clone$./console.py
+(hbnb) help
 
-# Installation
+Documented commands (type help <topic>):
+========================================
+EOF  all  create  destroy  help  quit  show  update
 
-> under your virtualenv do:
-
-Ensure you have latest setuptools
-```
-pip install -U setuptools
-```
-
-then install beta version (recommended)
-
-```
-pip install flasgger==0.9.7b2
-```
-
-or (latest stable for legacy apps)
-
-```
-pip install flasgger==0.9.5
-```
-
-or (dev version)
-
-```
-pip install https://github.com/flasgger/flasgger/tarball/master
-```
-
-> NOTE: If you want to use **Marshmallow Schemas** you also need to run `pip install marshmallow apispec`
-
-## How to run tests
-
-(You may see the command in [.travis.yml](./.travis.yml) for `before_install` part)
-
-In your virtualenv:
-
-```
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
-make test
-```
-
-# Getting started
-
-## Using docstrings as specification
-
-Create a file called for example `colors.py`
-
-```python
-from flask import Flask, jsonify
-from flasgger import Swagger
-
-app = Flask(__name__)
-swagger = Swagger(app)
-
-@app.route('/colors/<palette>/')
-def colors(palette):
-    """Example endpoint returning a list of colors by palette
-    This is using docstrings for specifications.
-    ---
-    parameters:
-      - name: palette
-        in: path
-        type: string
-        enum: ['all', 'rgb', 'cmyk']
-        required: true
-        default: all
-    definitions:
-      Palette:
-        type: object
-        properties:
-          palette_name:
-            type: array
-            items:
-              $ref: '#/definitions/Color'
-      Color:
-        type: string
-    responses:
-      200:
-        description: A list of colors (may be filtered by palette)
-        schema:
-          $ref: '#/definitions/Palette'
-        examples:
-          rgb: ['red', 'green', 'blue']
-    """
-    all_colors = {
-        'cmyk': ['cyan', 'magenta', 'yellow', 'black'],
-        'rgb': ['red', 'green', 'blue']
-    }
-    if palette == 'all':
-        result = all_colors
-    else:
-        result = {palette: all_colors.get(palette)}
-
-    return jsonify(result)
-
-app.run(debug=True)
+(hbnb) all MyModel
+** class doesn't exist **
+(hbnb) create BaseModel
+7da56403-cc45-4f1c-ad32-bfafeb2bb050
+(hbnb) all BaseModel
+[[BaseModel] (7da56403-cc45-4f1c-ad32-bfafeb2bb050) {'updated_at': datetime.datetime(2017, 9, 28, 9, 50, 46, 772167), 'id': '7da56403-cc45-4f1c-ad32-bfafeb2bb050', 'created_at': datetime.datetime(2017, 9, 28, 9, 50, 46, 772123)}]
+(hbnb) show BaseModel 7da56403-cc45-4f1c-ad32-bfafeb2bb050
+[BaseModel] (7da56403-cc45-4f1c-ad32-bfafeb2bb050) {'updated_at': datetime.datetime(2017, 9, 28, 9, 50, 46, 772167), 'id': '7da56403-cc45-4f1c-ad32-bfafeb2bb050', 'created_at': datetime.datetime(2017, 9, 28, 9, 50, 46, 772123)}
+(hbnb) destroy BaseModel 7da56403-cc45-4f1c-ad32-bfafeb2bb050
+(hbnb) show BaseModel 7da56403-cc45-4f1c-ad32-bfafeb2bb050
+** no instance found **
+(hbnb) quit
 ```
 
-Now run:
-
-```
-python colors.py
-```
-
-And go to: [http://localhost:5000/apidocs/](http://localhost:5000/apidocs/)
-
-You should get:
-
-![colors](docs/colors.png)
-
-## Using external YAML files
-
-Save a new file `colors.yml`
-
-```yaml
-Example endpoint returning a list of colors by palette
-In this example the specification is taken from external YAML file
----
-parameters:
-  - name: palette
-    in: path
-    type: string
-    enum: ['all', 'rgb', 'cmyk']
-    required: true
-    default: all
-definitions:
-  Palette:
-    type: object
-    properties:
-      palette_name:
-        type: array
-        items:
-          $ref: '#/definitions/Color'
-  Color:
-    type: string
-responses:
-  200:
-    description: A list of colors (may be filtered by palette)
-    schema:
-      $ref: '#/definitions/Palette'
-    examples:
-      rgb: ['red', 'green', 'blue']
-```
-
-
-lets use the same example changing only the view function.
-
-```python
-from flasgger import swag_from
-
-@app.route('/colors/<palette>/')
-@swag_from('colors.yml')
-def colors(palette):
-    ...
-```
-
-If you do not want to use the decorator you can use the docstring `file:` shortcut.
-
-```python
-@app.route('/colors/<palette>/')
-def colors(palette):
-    """
-    file: colors.yml
-    """
-    ...
-```
-
-
-## Using dictionaries as raw specs
-
-Create a Python dictionary as:
-
-```python
-specs_dict = {
-  "parameters": [
-    {
-      "name": "palette",
-      "in": "path",
-      "type": "string",
-      "enum": [
-        "all",
-        "rgb",
-        "cmyk"
-      ],
-      "required": "true",
-      "default": "all"
-    }
-  ],
-  "definitions": {
-    "Palette": {
-      "type": "object",
-      "properties": {
-        "palette_name": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Color"
-          }
-        }
-      }
-    },
-    "Color": {
-      "type": "string"
-    }
-  },
-  "responses": {
-    "200": {
-      "description": "A list of colors (may be filtered by palette)",
-      "schema": {
-        "$ref": "#/definitions/Palette"
-      },
-      "examples": {
-        "rgb": [
-          "red",
-          "green",
-          "blue"
-        ]
-      }
-    }
-  }
-}
-```
-
-Now take the same function and use the dict in the place of YAML file.
-
-```python
-@app.route('/colors/<palette>/')
-@swag_from(specs_dict)
-def colors(palette):
-    """Example endpoint returning a list of colors by palette
-    In this example the specification is taken from specs_dict
-    """
-    ...
-```
-
-## Using Marshmallow Schemas
-
-> FIRST: `pip install marshmallow apispec`
-
-> USAGE #1: `SwaggerView`
-
-```python
-from flask import Flask, jsonify
-from flasgger import Swagger, SwaggerView, Schema, fields
-
-
-class Color(Schema):
-    name = fields.Str()
-
-class Palette(Schema):
-    pallete_name = fields.Str()
-    colors = fields.Nested(Color, many=True)
-
-class PaletteView(SwaggerView):
-    parameters = [
-        {
-            "name": "palette",
-            "in": "path",
-            "type": "string",
-            "enum": ["all", "rgb", "cmyk"],
-            "required": True,
-            "default": "all"
-        }
-    ]
-    responses = {
-        200: {
-            "description": "A list of colors (may be filtered by palette)",
-            "schema": Palette
-        }
-    }
-
-    def get(self, palette):
-        """
-        Colors API using schema
-        This example is using marshmallow schemas
-        """
-        all_colors = {
-            'cmyk': ['cyan', 'magenta', 'yellow', 'black'],
-            'rgb': ['red', 'green', 'blue']
-        }
-        if palette == 'all':
-            result = all_colors
-        else:
-            result = {palette: all_colors.get(palette)}
-        return jsonify(result)
-
-app = Flask(__name__)
-swagger = Swagger(app)
-
-app.add_url_rule(
-    '/colors/<palette>',
-    view_func=PaletteView.as_view('colors'),
-    methods=['GET']
-)
-
-app.run(debug=True)
-
-```
-
-> USAGE #2: `Custom Schema from flasgger`
-
-- `Body` - support all fields in marshmallow
-- `Query` - support simple fields in marshmallow (Int, String and etc)
-- `Path` - support only int and str
-
-```python
-from flask import Flask, abort
-from flasgger import Swagger, Schema, fields
-from marshmallow.validate import Length, OneOf
-
-app = Flask(__name__)
-Swagger(app)
-
-swag = {"swag": True,
-        "tags": ["demo"],
-        "responses": {200: {"description": "Success request"},
-                      400: {"description": "Validation error"}}}
-
-
-class Body(Schema):
-    color = fields.List(fields.String(), required=True, validate=Length(max=5), example=["white", "blue", "red"])
-
-    def swag_validation_function(self, data, main_def):
-        self.load(data)
-
-    def swag_validation_error_handler(self, err, data, main_def):
-        abort(400, err)
-
-
-class Query(Schema):
-    color = fields.String(required=True, validate=OneOf(["white", "blue", "red"]))
-
-    def swag_validation_function(self, data, main_def):
-        self.load(data)
-
-    def swag_validation_error_handler(self, err, data, main_def):
-        abort(400, err)
-
-    swag_in = "query"
-
-
-@app.route("/color/<id>/<name>", methods=["POST"], **swag)
-def index(body: Body, query: Query, id: int, name: str):
-    return {"body": body, "query": query, "id": id, "name": name}
-
-if __name__ == "__main__":
-    app.run(debug=True)
-```
-
-
-> NOTE: take a look at `examples/validation.py` for a more complete example.
-
-
-> NOTE: when catching arguments in path rule always use explicit types, bad: ``/api/<username>`` good: ``/api/<string:username>``
-
-
-## Using **Flask RESTful** Resources
-
-Flasgger is compatible with Flask-RESTful you only need to install `pip install flask-restful` and then:
-
-```python
-from flask import Flask
-from flasgger import Swagger
-from flask_restful import Api, Resource
-
-app = Flask(__name__)
-api = Api(app)
-swagger = Swagger(app)
-
-class Username(Resource):
-    def get(self, username):
-        """
-        This examples uses FlaskRESTful Resource
-        It works also with swag_from, schemas and spec_dict
-        ---
-        parameters:
-          - in: path
-            name: username
-            type: string
-            required: true
-        responses:
-          200:
-            description: A single user item
-            schema:
-              id: User
-              properties:
-                username:
-                  type: string
-                  description: The name of the user
-                  default: Steven Wilson
-        """
-        return {'username': username}, 200
-
-
-api.add_resource(Username, '/username/<username>')
-
-app.run(debug=True)
-```
-
-## Auto-parsing external YAML docs and `MethodView`s
-
-Flasgger can be configured to auto-parse external YAML API docs.  [Set a `doc_dir`](https://github.com/rochacbruno/flasgger/blob/aaef05c17cc559d01b7436211093463642eb6ae2/examples/parsed_view_func.py#L16) in your `app.config['SWAGGER']` and Swagger will load API docs by looking in `doc_dir` for YAML files stored by endpoint-name and method-name.  For example, `'doc_dir': './examples/docs/'` and a file `./examples/docs/items/get.yml` will provide a Swagger doc for `ItemsView` method `get`.
-
-Additionally, when using **Flask RESTful** per above, by passing `parse=True` when constructing `Swagger`, Flasgger will use  `flask_restful.reqparse.RequestParser`, locate all `MethodView`s and parsed and validated data will be stored in `flask.request.parsed_data`.
-
-## Handling multiple http methods and routes for a single function
-
-You can separate specifications by endpoint or methods
-
-```python
-from flasgger.utils import swag_from
-
-@app.route('/api/<string:username>', endpoint='with_user_name', methods=['PUT', 'GET'])
-@app.route('/api/', endpoint='without_user_name')
-@swag_from('path/to/external_file.yml', endpoint='with_user_name')
-@swag_from('path/to/external_file_no_user_get.yml', endpoint='without_user_name', methods=['GET'])
-@swag_from('path/to/external_file_no_user_put.yml', endpoint='without_user_name', methods=['PUT'])
-def fromfile_decorated(username=None):
-    if not username:
-        return "No user!"
-    return jsonify({'username': username})
-```
-
-And the same can be achieved with multiple methods in a `MethodView` or `SwaggerView` by
-registering the `url_rule` many times. Take a look at `examples/example_app`
-
-
-# Use the same data to validate your API POST body.
-
-Setting `swag_from`'s _validation_ parameter to `True` will validate incoming data automatically:
-
-```python
-from flasgger import swag_from
-
-@swag_from('defs.yml', validation=True)
-def post():
-    # if not validate returns ValidationError response with status 400
-    # also returns the validation message.
-```
-
-Using `swagger.validate` annotation is also possible:
-
-```python
-from flasgger import Swagger
-
-swagger = Swagger(app)
-
-@swagger.validate('UserSchema')
-def post():
-    '''
-    file: defs.yml
-    '''
-    # if not validate returns ValidationError response with status 400
-    # also returns the validation message.
-```
-
-Yet you can call `validate` manually:
-
-```python
-from flasgger import swag_from, validate
-
-@swag_from('defs.yml')
-def post():
-    validate(request.json, 'UserSchema', 'defs.yml')
-    # if not validate returns ValidationError response with status 400
-    # also returns the validation message.
-```
-
-It is also possible to define `validation=True` in `SwaggerView` and also use
-`specs_dict` for validation.
-
-Take a look at `examples/validation.py` for more information.
-
-All validation options can be found at http://json-schema.org/latest/json-schema-validation.html
-
-### Custom validation
-
-By default Flasgger will use [python-jsonschema](https://python-jsonschema.readthedocs.io/en/latest/)
-to perform validation.
-
-Custom validation functions are supported as long as they meet the requirements:
- - take two, and only two, positional arguments:
-    - the data to be validated as the first; and
-    - the schema to validate against as the second argument
- - raise any kind of exception when validation fails.
-
-Any return value is discarded.
-
-
-Providing the function to the Swagger instance will make it the default:
-
-```python
-from flasgger import Swagger
-
-swagger = Swagger(app, validation_function=my_validation_function)
-```
-
-Providing the function as parameter of `swag_from` or `swagger.validate`
-annotations or directly to the `validate` function will force it's use
-over the default validation function for Swagger:
-
-```python
-from flasgger import swag_from
-
-@swag_from('spec.yml', validation=True, validation_function=my_function)
-...
-```
-
-```python
-from flasgger import Swagger
-
-swagger = Swagger(app)
-
-@swagger.validate('Pet', validation_function=my_function)
-...
-```
-
-```python
-from flasgger import validate
-
-...
-
-    validate(
-        request.json, 'Pet', 'defs.yml', validation_function=my_function)
-```
-
-### Validation Error handling
-
-By default Flasgger will handle validation errors by aborting the
-request with a 400 BAD REQUEST response with the error message.
-
-A custom validation error handling function can be provided to
-supersede default behavior as long as it meets the requirements:
- - take three, and only three, positional arguments:
-    - the error raised as the first;
-    - the data which failed validation as the second; and
-    - the schema used in to validate as the third argument
-
-
-Providing the function to the Swagger instance will make it the default:
-
-```python
-from flasgger import Swagger
-
-swagger = Swagger(app, validation_error_handler=my_handler)
-```
-
-Providing the function as parameter of `swag_from` or `swagger.validate`
-annotations or directly to the `validate` function will force it's use
-over the default validation function for Swagger:
-
-```python
-from flasgger import swag_from
-
-@swag_from(
-    'spec.yml', validation=True, validation_error_handler=my_handler)
-...
-```
-
-```python
-from flasgger import Swagger
-
-swagger = Swagger(app)
-
-@swagger.validate('Pet', validation_error_handler=my_handler)
-...
-```
-
-```python
-from flasgger import validate
-
-...
-
-    validate(
-        request.json, 'Pet', 'defs.yml',
-        validation_error_handler=my_handler)
-```
-
-Examples of use of a custom validation error handler function can be
-found at [example validation_error_handler.py](examples/validation_error_handler.py)
-
-# Get defined schemas as python dictionaries
-
-You may wish to use schemas you defined in your Swagger specs as dictionaries
-without replicating the specification. For that you can use the `get_schema`
-method:
-
-```python
-from flask import Flask, jsonify
-from flasgger import Swagger, swag_from
-
-app = Flask(__name__)
-swagger = Swagger(app)
-
-@swagger.validate('Product')
-def post():
-    """
-    post endpoint
-    ---
-    tags:
-      - products
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          id: Product
-          required:
-            - name
-          properties:
-            name:
-              type: string
-              description: The product's name.
-              default: "Guarana"
-    responses:
-      200:
-        description: The product inserted in the database
-        schema:
-          $ref: '#/definitions/Product'
-    """
-    rv = db.insert(request.json)
-    return jsonify(rv)
-
-...
-
-product_schema = swagger.get_schema('product')
-```
-
-This method returns a dictionary which contains the Flasgger schema id,
-all defined parameters and a list of required parameters.
-
-# HTML sanitizer
-
-By default Flasgger will try to sanitize the content in YAML definitions
-replacing every ```\n``` with ```<br>``` but you can change this behaviour
-setting another kind of sanitizer.
-
-```python
-from flasgger import Swagger, NO_SANITIZER
-
-app =Flask()
-swagger = Swagger(app, sanitizer=NO_SANITIZER)
-```
-
-You can write your own sanitizer
-
-```python
-swagger = Swagger(app, sanitizer=lambda text: do_anything_with(text))
-```
-
-There is also a Markdown parser available, if you want to be able to render
-Markdown in your specs description use **MK_SANITIZER**
-
-
-# Swagger UI and templates
-
-You can override the `templates/flasgger/index.html` in your application and
-this template will be the `index.html` for SwaggerUI. Use `flasgger/ui2/templates/index.html`
-as base for your customization.
-
-Flasgger supports Swagger UI versions 2 and 3, The version 3 is still experimental but you
-can try setting `app.config['SWAGGER']['uiversion']`.
-
-```python
-app = Flask(__name__)
-app.config['SWAGGER'] = {
-    'title': 'My API',
-    'uiversion': 3
-}
-swagger = Swagger(app)
-
-```
-
-# OpenAPI 3.0 Support
-
-There is experimental support for OpenAPI 3.0 that should work when using SwaggerUI 3. To use OpenAPI 3.0, set `app.config['SWAGGER']['openapi']` to a version that the current SwaggerUI 3 supports such as `'3.0.2'`.
-
-For an example of this that uses `callbacks` and `requestBody`, see the [callbacks example](examples/callbacks.py).
-
-## Externally loading Swagger UI and jQuery JS/CSS
-
-Starting with Flasgger 0.9.2 you can specify external URL locations for loading the JavaScript and CSS for the Swagger and jQuery libraries loaded in the Flasgger default templates.  If the configuration properties below are omitted, Flasgger will serve static versions it includes - these versions may be older than the current Swagger UI v2 or v3 releases.
-
-The following example loads Swagger UI and jQuery versions from unpkg.com:
-
-```
-swagger_config = Swagger.DEFAULT_CONFIG
-swagger_config['swagger_ui_bundle_js'] = '//unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js'
-swagger_config['swagger_ui_standalone_preset_js'] = '//unpkg.com/swagger-ui-dist@3/swagger-ui-standalone-preset.js'
-swagger_config['jquery_js'] = '//unpkg.com/jquery@2.2.4/dist/jquery.min.js'
-swagger_config['swagger_ui_css'] = '//unpkg.com/swagger-ui-dist@3/swagger-ui.css'
-Swagger(app, config=swagger_config)
-```
-
-# Initializing Flasgger with default data.
-
-You can start your Swagger spec with any default data providing a template:
-
-```python
-template = {
-  "swagger": "2.0",
-  "info": {
-    "title": "My API",
-    "description": "API for my data",
-    "contact": {
-      "responsibleOrganization": "ME",
-      "responsibleDeveloper": "Me",
-      "email": "me@me.com",
-      "url": "www.me.com",
-    },
-    "termsOfService": "http://me.com/terms",
-    "version": "0.0.1"
-  },
-  "host": "mysite.com",  # overrides localhost:500
-  "basePath": "/api",  # base bash for blueprint registration
-  "schemes": [
-    "http",
-    "https"
-  ],
-  "operationId": "getmyData"
-}
-
-swagger = Swagger(app, template=template)
-
-```
-
-And then the template is the default data unless some view changes it. You
-can also provide all your specs as template and have no views. Or views in
-external APP.
-
-## Getting default data at runtime
-
-Sometimes you need to get some data at runtime depending on dynamic values ex: you want to check `request.is_secure` to decide if `schemes` will be `https` you can do that by using `LazyString`.
-
-```py
-from flask import Flask
-from flasgger import, Swagger, LazyString, LazyJSONEncoder
-
-app = Flask(__init__)
-
-# Set the custom Encoder (Inherit it if you need to customize)
-app.json_encoder = LazyJSONEncoder
-
-
-template = dict(
-    info={
-        'title': LazyString(lambda: 'Lazy Title'),
-        'version': LazyString(lambda: '99.9.9'),
-        'description': LazyString(lambda: 'Hello Lazy World'),
-        'termsOfService': LazyString(lambda: '/there_is_no_tos')
-    },
-    host=LazyString(lambda: request.host),
-    schemes=[LazyString(lambda: 'https' if request.is_secure else 'http')],
-    foo=LazyString(lambda: "Bar")
-)
-Swagger(app, template=template)
-
-```
-
-The `LazyString` values will be evaluated only when `jsonify` encodes the value at runtime, so you have access to Flask `request, session, g, etc..` and also may want to access a database.
-
-## Behind a reverse proxy
-
-Sometimes you're serving your swagger docs behind an reverse proxy (e.g. NGINX).  When following the [Flask guidance](http://flask.pocoo.org/snippets/35/),
-the swagger docs will load correctly, but the "Try it Out" button points to the wrong place.  This can be fixed with the following code:
-
-```python
-from flask import Flask, request
-from flasgger import Swagger, LazyString, LazyJSONEncoder
-
-app = Flask(__name__)
-app.json_encoder = LazyJSONEncoder
-
-template = dict(swaggerUiPrefix=LazyString(lambda : request.environ.get('HTTP_X_SCRIPT_NAME', '')))
-swagger = Swagger(app, template=template)
-
-```
-
-# Customize default configurations
-
-Custom configurations such as a different specs route or disabling Swagger UI can be provided to Flasgger:
-
-```python
-swagger_config = {
-    "headers": [
-    ],
-    "specs": [
-        {
-            "endpoint": 'apispec_1',
-            "route": '/apispec_1.json',
-            "rule_filter": lambda rule: True,  # all in
-            "model_filter": lambda tag: True,  # all in
-        }
-    ],
-    "static_url_path": "/flasgger_static",
-    # "static_folder": "static",  # must be set by user
-    "swagger_ui": True,
-    "specs_route": "/apidocs/"
-}
-
-swagger = Swagger(app, config=swagger_config)
-
-```
-
-## Extracting Definitions
-
-Definitions can be extracted when `id` is found in spec, example:
-
-```python
-from flask import Flask, jsonify
-from flasgger import Swagger
-
-app = Flask(__name__)
-swagger = Swagger(app)
-
-@app.route('/colors/<palette>/')
-def colors(palette):
-    """Example endpoint returning a list of colors by palette
-    ---
-    parameters:
-      - name: palette
-        in: path
-        type: string
-        enum: ['all', 'rgb', 'cmyk']
-        required: true
-        default: all
-    responses:
-      200:
-        description: A list of colors (may be filtered by palette)
-        schema:
-          id: Palette
-          type: object
-          properties:
-            palette_name:
-              type: array
-              items:
-                schema:
-                  id: Color
-                  type: string
-        examples:
-          rgb: ['red', 'green', 'blue']
-    """
-    all_colors = {
-        'cmyk': ['cyan', 'magenta', 'yellow', 'black'],
-        'rgb': ['red', 'green', 'blue']
-    }
-    if palette == 'all':
-        result = all_colors
-    else:
-        result = {palette: all_colors.get(palette)}
-
-    return jsonify(result)
-
-app.run(debug=True)
-```
-
-In this example you do not have to pass `definitions` but need to add `id` to
-your schemas.
-
-## Python2 Compatibility
-
-Version `0.9.5.*` will be the last version that supports Python2. 
-Please direct discussions to [#399](https://github.com/flasgger/flasgger/issues/399). 
+## Bugs
+No known bugs at this time. 
+
+## Author
+Duresa Eshetu - [Github] / [Twitter]
+
+Second part of Airbnb: Joann Vuong
+## License
+Public Domain. No copy write protection. 
